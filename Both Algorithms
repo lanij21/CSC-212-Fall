@@ -1,0 +1,189 @@
+
+#include <iostream>
+#include <bits/stdc++.h>
+#include <vector>
+using namespace std;
+
+// includes for testing runtimes
+#include <chrono>
+#include <ctime>
+#include <time.h>
+#include <string.h>
+
+void badHeuristic(string str, int size, std::vector<int> * badchar) {
+	// Initialize everything at -1
+	for (int i = 0; i < 256; i++) {
+		badchar->push_back(-1);
+	}
+
+	// fill the value of last occurrence of the last charicter
+	for (int j = 0; j < size; j++) {
+		badchar->at((int)str[j]) = j;
+	}
+}
+
+// gives an LPS array from a charicter list
+void LPS(char* pat, int M, int* LPSList){
+	// len of the previous longest prefix suffix
+	int len = 0;
+
+	LPSList[0] = 0; // LPSList[0] will always be 0
+
+	// calculates LPSList[x]
+	int x = 1;
+	while (x < M) {
+
+		if (pat[x] == pat[len]) {
+
+			len++;
+			LPSList[x] = len;
+			x++;
+
+		} else {
+
+			if (len != 0) {
+
+				len = LPSList[len - 1];
+
+			} else {
+
+				LPSList[x] = 0;
+				x++;
+
+			}
+		}
+	}
+}
+
+std::vector<int> boyerMoore(string pattern, string text) {
+	int patSize = pattern.size();
+	int textSize = text.size();
+	// vecotr for the solutions
+	std::vector<int> solutions;
+	std::vector<int> badchar;
+	// Fill the bad character array
+	badHeuristic(pattern, patSize, &badchar);
+	int shift = 0;
+
+	while(shift <= (textSize - patSize)) {
+		//std::cout << "start " <<   endl;
+		int i = patSize - 1;
+
+		//lower i while characters of pattern and text are the same
+		//std::cout << "while " << endl;
+		while(i >= 0 && pattern[i] == text[shift + i]) {
+			//std::cout << "test 6" << endl;
+			i = i - 1;
+		}
+		//std::cout << "if " << endl;
+		if (i <= -1) {
+			solutions.push_back(shift);
+
+			// move the pattern so that the next character in text aligns with its last occurrence in pattern.
+			//std::cout << "if if " << endl;
+			if (shift + patSize < textSize) {
+				shift = shift + patSize-badchar[text[shift + patSize]];
+				//std::cout << "if if in " << endl;
+			} else {
+				shift = shift + 1;
+				//std::cout << "if else in " << endl;
+			}
+
+		} else {
+			// shift to align with the last occurrence of the incorrect char in pattern
+			shift = shift + max(1, i - badchar[text[shift + i]]);
+			//std::cout << "else in " <<   endl;
+		}
+	}
+	return solutions;
+}
+
+std::vector<int> KMP(char* patern, char* txtToCheck) {
+
+	int strLenPat = strlen(patern);
+	int strLenCheck = strlen(txtToCheck);
+	std::vector<int> solutions;
+
+	// array for the LPS values of the pattern
+	int lps[strLenPat];
+
+	// fills the lps array
+	LPS(patern, strLenPat, lps);
+
+	int x = 0; // index for txtToCheck
+	int y = 0; // index for patern
+	while ((strLenCheck - x) >= (strLenPat - y)) {
+
+		if (patern[y] == txtToCheck[x]) {
+
+			y++;
+			x++;
+
+		}
+		if (y == strLenPat) {
+
+			solutions.push_back(x-y);
+			y = lps[y - 1];
+
+		} else if (x < strLenCheck && patern[y] != txtToCheck[x]) {
+
+			if (y != 0) {
+
+				y = lps[y - 1];
+
+			} else {
+
+				x++;
+
+			}
+		}
+	}
+	return solutions;
+}
+
+
+int main() {
+	std::cout << "input the size of the list (idealy larger than 1000 and below 10000000): ";
+	long long int num;
+	std::cin >> num;
+	char text[num];
+
+	for (long long int i = 0; i < num - 1; i++) {
+		text[i] = 'X';
+	}
+	text[num - 1] = 'Y';
+
+	char pattern[] = "XXY";
+	std::vector<int> solutions;
+
+	//timer
+	auto start = std::chrono::system_clock::now();
+	solutions = KMP(pattern, text);
+	if (solutions.size() != 0) {
+		for (int i = 0; i < solutions.size(); i++) {
+			std::cout << "pattern at idx: " << solutions[i] << std::endl;
+		}
+	} else {
+		std::cout << "the pattern was not found :(" << endl;
+	}
+	auto end = std::chrono::system_clock::now();
+	std::chrono::duration<double> elapsed_seconds = end-start;
+	std::cout << "KMP time (seconds): " << std::setprecision(10) << elapsed_seconds.count() << endl;
+	//std::cout << "KMP time: " << (double)end - (double)start << endl;
+
+	// timer
+	auto start2 = std::chrono::system_clock::now();
+	solutions = boyerMoore(pattern, text);
+	if (solutions.size() != 0) {
+		for (int i = 0; i < solutions.size(); i++) {
+			std::cout << "pattern at idx: " << solutions[i] << std::endl;
+		}
+	} else {
+		std::cout << "the pattern was not found :(" << endl;
+	}
+	auto end2 = std::chrono::system_clock::now();
+	elapsed_seconds = end2-start2;
+	std::cout << "boyerMoore time: " << std::setprecision(10) << elapsed_seconds.count() << endl;
+
+	return 0;
+}
