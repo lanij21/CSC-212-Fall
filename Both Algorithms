@@ -16,13 +16,13 @@ void badHeuristic(string str, int size, std::vector<int> * badchar) {
 		badchar->push_back(-1);
 	}
 
-	// fill the value of last occurrence of the last charicter
+	// fill the value of last occurrence of the last character
 	for (int j = 0; j < size; j++) {
 		badchar->at((int)str[j]) = j;
 	}
 }
 
-// gives an LPS array from a charicter list
+// gives an LPS array from a character list
 void LPS(char* pat, int M, int* LPSList){
 	// len of the previous longest prefix suffix
 	int len = 0;
@@ -58,7 +58,7 @@ void LPS(char* pat, int M, int* LPSList){
 std::vector<int> boyerMoore(string pattern, string text) {
 	int patSize = pattern.size();
 	int textSize = text.size();
-	// vecotr for the solutions
+	// vector for the solutions
 	std::vector<int> solutions;
 	std::vector<int> badchar;
 	// Fill the bad character array
