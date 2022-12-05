@@ -143,7 +143,7 @@ std::vector<int> KMP(char* patern, char* txtToCheck) {
 
 
 int main() {
-	std::cout << "input the size of the list (idealy larger than 1000 and below 10000000): ";
+	std::cout << "Input the size of the list (ideally larger than 1000 and below 10000000): ";
 	long long int num;
 	std::cin >> num;
 	char text[num];
@@ -161,10 +161,10 @@ int main() {
 	solutions = KMP(pattern, text);
 	if (solutions.size() != 0) {
 		for (int i = 0; i < solutions.size(); i++) {
-			std::cout << "pattern at idx: " << solutions[i] << std::endl;
+			std::cout << "Pattern at idx: " << solutions[i] << std::endl;
 		}
 	} else {
-		std::cout << "the pattern was not found :(" << endl;
+		std::cout << "The pattern was not found :(" << endl;
 	}
 	auto end = std::chrono::system_clock::now();
 	std::chrono::duration<double> elapsed_seconds = end-start;
@@ -176,10 +176,10 @@ int main() {
 	solutions = boyerMoore(pattern, text);
 	if (solutions.size() != 0) {
 		for (int i = 0; i < solutions.size(); i++) {
-			std::cout << "pattern at idx: " << solutions[i] << std::endl;
+			std::cout << "Pattern at idx: " << solutions[i] << std::endl;
 		}
 	} else {
-		std::cout << "the pattern was not found :(" << endl;
+		std::cout << "The pattern was not found :(" << endl;
 	}
 	auto end2 = std::chrono::system_clock::now();
 	elapsed_seconds = end2-start2;
